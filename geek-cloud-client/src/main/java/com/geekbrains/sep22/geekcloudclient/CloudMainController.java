@@ -6,8 +6,13 @@ import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +31,7 @@ public class CloudMainController implements Initializable {
     private String currentDirectory;
 
     private Network<ObjectDecoderInputStream, ObjectEncoderOutputStream> network;
-    
+
     private Socket socket;
 
     private boolean needReadMessages = true;
@@ -126,5 +131,57 @@ public class CloudMainController implements Initializable {
         }
         return List.of();
     }
+    public void deleteFile(ActionEvent actionEvent) {
+        if (clientView.isMouseTransparent()){
+            try{
+                Files.delete(Path.of(clientView.getSelectionModel().getSelectedItem()));
+            } catch (IOException e) {
+                System.err.println("Error on delete file: " + e.getMessage());
+//                throw new RuntimeException(e);
+            }
+        }
+        if (serverView.isMouseTransparent()){
 
+        }
+    }
+
+    public void renameFile(ActionEvent actionEvent) throws IOException {
+        String fileName = serverView.getSelectionModel().getSelectedItem();
+        if (clientView.isMouseTransparent()){
+            try{
+                Files.delete(Path.of(clientView.getSelectionModel().getSelectedItem()));
+            } catch (IOException e) {
+                System.err.println("Error on delete file: " + e.getMessage());
+
+            }
+        }
+        if (serverView.isMouseTransparent()){
+
+        }
+
+    }
+
+    private void renameLocalForm(File file) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("rename-form.fxml"));
+        Parent parent = loader.load();
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(parent));
+
+        stage.initModality(Modality.WINDOW_MODAL);
+
+        stage.showAndWait();
+
+        RenameFormController renameFormController = loader.getController();
+        if(renameFormController.getModalResult()){
+            String newFileName = renameFormController.getNewName();
+            File newNameFile  = new File(newFileName);
+            if (newNameFile.exists()){
+                System.err.println("File with name " + newFileName + " is exist ");
+            } else {
+                boolean success = file.renameTo(newNameFile);
+            }
+        }
+    }
 }

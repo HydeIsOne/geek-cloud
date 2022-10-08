@@ -4,6 +4,7 @@ module com.geekbrains.sep22.geekcloudclient {
     requires com.geekbrains.common;
     requires io.netty.codec;
 
+
     opens com.geekbrains.sep22.geekcloudclient to javafx.fxml;
     exports com.geekbrains.sep22.geekcloudclient;
 }
